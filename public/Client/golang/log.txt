@@ -1,0 +1,88 @@
+// package main
+
+// import (
+// 	"log"
+// 	"net/url"
+// 	"time"
+
+// 	http "github.com/useflyent/fhttp"
+// 	http2 "github.com/useflyent/fhttp/http2"
+// )
+
+// type Browser struct {
+// 	JA3       string
+// 	UserAgent string
+// 	Cookies   []Cookie
+// }
+
+// func NewClient(browser Browser, proxyUrl ...string) (http.Client, error) {
+// 	//fix check PR
+// 	if len(proxyUrl) > 0 && len(proxyUrl[0]) > 0 {
+// 		proxyUrl, err := url.Parse(proxyUrl[0])
+// 		if err != nil {
+// 			h1t := &http.Transport{
+// 				ForceAttemptHTTP2: true,
+// 			}
+
+// 			t2, err := http2.ConfigureTransports(h1t)
+// 			if err != nil {
+// 				log.Fatalf(err.Error())
+// 			}
+// 			t2.Settings = []http2.Setting{
+// 				{ID: http2.SettingMaxConcurrentStreams, Val: 1000},
+// 				{ID: http2.SettingMaxFrameSize, Val: 16384},
+// 				{ID: http2.SettingMaxHeaderListSize, Val: 262144},
+// 			}
+// 			t2.InitialWindowSize = 6291456
+// 			t2.HeaderTableSize = 65536
+// 			h1t.H2transport = t2
+// 			return http.Client{
+// 				Timeout:   30 * time.Second,
+// 				Transport: h1t,
+// 			}, err
+// 		}
+// 		// proxyUrl, err := url.Parse(proxyUrl[0])
+// 		h1t := &http.Transport{
+// 			ForceAttemptHTTP2: true,
+// 			Proxy:             http.ProxyURL(proxyUrl),
+// 		}
+
+// 		t2, err := http2.ConfigureTransports(h1t)
+// 		if err != nil {
+// 			log.Fatalf(err.Error())
+// 		}
+// 		t2.Settings = []http2.Setting{
+// 			{ID: http2.SettingMaxConcurrentStreams, Val: 1000},
+// 			{ID: http2.SettingMaxFrameSize, Val: 16384},
+// 			{ID: http2.SettingMaxHeaderListSize, Val: 262144},
+// 		}
+// 		t2.InitialWindowSize = 6291456
+// 		t2.HeaderTableSize = 65536
+// 		h1t.H2transport = t2
+// 		return http.Client{
+// 			Timeout:   30 * time.Second,
+// 			Transport: h1t,
+// 		}, nil
+// 	} else {
+// 		h1t := &http.Transport{
+// 			ForceAttemptHTTP2: true,
+// 		}
+
+// 		t2, err := http2.ConfigureTransports(h1t)
+// 		if err != nil {
+// 			log.Fatalf(err.Error())
+// 		}
+// 		t2.Settings = []http2.Setting{
+// 			{ID: http2.SettingMaxConcurrentStreams, Val: 1000},
+// 			{ID: http2.SettingMaxFrameSize, Val: 16384},
+// 			{ID: http2.SettingMaxHeaderListSize, Val: 262144},
+// 		}
+// 		t2.InitialWindowSize = 6291456
+// 		t2.HeaderTableSize = 65536
+// 		h1t.H2transport = t2
+// 		return http.Client{
+// 			Timeout:   30 * time.Second,
+// 			Transport: h1t,
+// 		}, nil
+// 	}
+// }

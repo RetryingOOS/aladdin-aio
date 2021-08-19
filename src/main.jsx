@@ -252,7 +252,6 @@ class Index extends React.Component {
               >
                 <TopBar />
                 <SidebarReact />
-                <Route exact path="/" component={TasksTable} />
                 <Route exact path="/dashboard" component={Dashboard} />
                 <Route exact path="/tasks" component={TasksTable} />
                 <Route exact path="/captcha" component={Captcha} />
@@ -261,6 +260,7 @@ class Index extends React.Component {
                 <Route exact path="/accounts" component={Accounts} />
                 <Route exact path="/sessions" component={Sessions} />
                 <Route exact path="/settings" component={Settings} />
+                <Route exact path="*" component={TasksTable} />
               </div>
             ) : (
               <>

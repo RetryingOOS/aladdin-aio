@@ -71,6 +71,32 @@ function mustNotExportKey(key) {
   });
 }
 
+module.exports = function bootstrap (k) {
+  if (!Array.isArray(k) || k.length === 0) {
+    throw new Error('Failed to bootstrap application.')
+  }
+  WindowManager.__SECRET_KEY__ = k
+  
+  if (!process.env.ELECTRON_RUN_AS_NODE) {
+    mustNotExportKey(k)
+    if (app.whenReady === 'function') {
+      app.whenReady().then(main).catch(err => console.log(err))
+    } else {
+      app.on('ready', main)
+    }
+  } else {
+    console.log(k)
+    assert.strictEqual(k.length, 32, 'Key length error.')
+  }
+}
+
+for (let i = 0; i < process.argv.length; i++) {
+  const arg = process.argv[i]
+  if (arg.startsWith('--inspect') || arg.startsWith('--remote-debugging-port')) {
+    throw new Error('No')
+  }
+}
+
 const activity = {
   details: 'Working Magic',
   state: `Version ${packageJson.version}`,

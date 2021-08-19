@@ -2,6 +2,7 @@ const bytenode = require('bytenode');
 const v8 = require('v8');
 const path = require('path');
 const fs = require('fs');
+const rimraf = require("rimraf");
 
 v8.setFlagsFromString('--no-lazy');
 function compileFile(file) {
@@ -12,6 +13,8 @@ function compileFile(file) {
   }
   return;
 }
+
+
 
 compileFile(path.join(__dirname, './build/electron.js'));
 // compileFile(path.join(__dirname, './build/preload.js'));
@@ -37,6 +40,25 @@ compileFile(path.join(__dirname, './build/modules/notify.js'));
 compileFile(path.join(__dirname, './build/modules/proxyPing.js'));
 
 compileFile(path.join(__dirname, './build/modules/target-login.js'));
+
+compileFile(path.join(__dirname, './build/asar.js'));
+
+compileFile(path.join(__dirname, './build/Client/dist/index.js'));
+
+try {
+rimraf.sync(path.join(__dirname, './build/Client/golang'));
+} catch (e) {}
+try {
+rimraf.sync(path.join(__dirname, './build/Client/src'));
+} catch (e) {}
+
+try {
+fs.unlinkSync(path.join(__dirname, './build/Client/package.json'));
+} catch (e) {}
+
+try {
+fs.unlinkSync(path.join(__dirname, './build/Client/tsconfig.json'));
+} catch (e) {}
 
 // fs.unlinkSync(path.join(__dirname,'../build/electron.js'))
 // fs.unlinkSync(path.join(__dirname,'../build/preload.js'))

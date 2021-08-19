@@ -88,7 +88,7 @@ class Golang extends EventEmitter {
       cleanExit(new Error('Operating system not supported'));
     }
 
-    child = spawn(path.join(__dirname, executableFilename), {
+    child = spawn(path.join(__dirname, executableFilename).replace('app.asar', 'app.asar.unpacked'), {
       env: { WS_PORT: port.toString() },
       shell: true,
       windowsHide: true,

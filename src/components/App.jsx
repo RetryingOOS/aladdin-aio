@@ -90,6 +90,7 @@ class TasksTable extends React.Component {
         id: passwordGenerator(),
         store: '',
         groupName: '',
+        tasks: 0,
       },
     };
   }
@@ -237,8 +238,8 @@ class TasksTable extends React.Component {
     this.props.dispatch({ type: 'update', obj: { accounts } });
   };
 
-  deleteTasks = (e) => {
-    ipcRenderer.sendSync('delete:tasks');
+  deleteTasks = (e, taskGroupID) => {
+    ipcRenderer.sendSync('delete:tasks', taskGroupID);
     this.getTasks();
     this.props.dispatch({
       type: 'update',
@@ -363,6 +364,7 @@ class TasksTable extends React.Component {
           id: passwordGenerator(),
           store: '',
           groupName: '',
+          tasks : 0,
         },
       }));
       this.close();
@@ -895,7 +897,7 @@ class TasksTable extends React.Component {
               onClick={(event) => {
                 checkedKeys.length >= 1
                   ? this.deleteSomeTasks(event, checkedKeys)
-                  : this.deleteTasks();
+                  : this.deleteTasks(event, this.state.selectedTaskGroup);
               }}
               style={{ borderWidth: 2, marginTop: '10px' }}
             >

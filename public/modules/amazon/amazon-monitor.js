@@ -8,6 +8,7 @@ const Tasks = require('../../tasks');
 class AmazonMonitor extends Tasks {
   constructor(props) {
     super(props);
+    this.count = 0
   }
 
   getRandomInt(min, max) {
@@ -25,6 +26,19 @@ class AmazonMonitor extends Tasks {
     await this.getRandomProxy();
     await this.monitor();
   }
+
+  sleep_60 = () => new Promise((resolve, reject) => {
+    var interval = setInterval(async () => {
+        var res = this.sendStatus(`Sleeping for ${60 - this.count} seconds`);
+        this.count += 1;
+
+        if (this.count === 60) { // if it has been run 5 times, we resolve the promise
+            clearInterval(interval);
+            this.count = 0
+            resolve(true); // result of promise
+        }
+    }, 1000); // 1 min interval
+  });
 
   async monitor() {
     if (this.cancelled) return;
@@ -59,12 +73,25 @@ class AmazonMonitor extends Tasks {
     // console.log(req.body);
     const $ = cheerio.load(req.body);
     // this.listingId = $('input[name="offeringID.1"]').first().val();
-    const listingIDArray = $('span[class="a-declarative"]')
-      .map((i, x) => $(x).attr('data-aod-atc-action'))
-      .toArray();
-    this.listingId = JSON.parse(listingIDArray[0]).oid;
-    this.Monitor.notify(this.itemID, this.listingId);
-    this.sendStatus('Got Item');
+    try {
+      const price0 = $('#aod-price-0 > span > span.a-offscreen').text();
+      const listingIDArray = $('span[class="a-declarative"]')
+        .map((i, x) => $(x).attr('data-aod-atc-action'))
+        .toArray();
+      this.listingId = JSON.parse(listingIDArray[0]).oid;
+      this.Monitor.notify(this.itemID, this.listingId);
+      this.sendStatus('Got Item');
+    } catch (e) {
+      await this.sleep_60();
+      await this.monitor();
+    }
+
+    // const listingIDArray = $('span[class="a-declarative"]')
+    //   .map((i, x) => $(x).attr('data-aod-atc-action'))
+    //   .toArray();
+    // this.listingId = JSON.parse(listingIDArray[0]).oid;
+    // this.Monitor.notify(this.itemID, this.listingId);
+    // this.sendStatus('Got Item');
   }
 }
 

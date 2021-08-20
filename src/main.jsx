@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { HashRouter as Router, Route, Redirect } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import './App.global.css';
@@ -50,6 +50,7 @@ const store = createStore(function (
     activated: false,
     key: {},
     tasks: [],
+    activeTasks: [],
     filteredTasks: [],
     filteredProxies: [],
     filteredProfiles: [],
@@ -224,7 +225,7 @@ class Index extends React.Component {
   }
 
   fetchAnnouncements() {
-    fetch('https://staging-random-aio.vercel.app/api/announcements')
+    fetch('https://aladdin-aio.com/api/announcements')
       .then((response1) => response1.json())
       .then((json) =>
         store.dispatch({
@@ -260,7 +261,7 @@ class Index extends React.Component {
                 <Route exact path="/accounts" component={Accounts} />
                 <Route exact path="/sessions" component={Sessions} />
                 <Route exact path="/settings" component={Settings} />
-                <Route exact path="*" component={TasksTable} />
+                <Redirect path="*" to="/tasks" />
               </div>
             ) : (
               <>

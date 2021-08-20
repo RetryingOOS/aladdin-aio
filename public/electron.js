@@ -175,10 +175,11 @@ const createLoginWindow = async () => {
     frame: false,
     transparent: true,
     resizable: false,
-    //  icon: getAssetPath('icon.png'),
+    icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
+      devTools: false,
       contextIsolation: false,
     },
   });
@@ -237,7 +238,7 @@ const createLoginWindow = async () => {
 
 const checkLogin = async () => {
   const key = store.get('settings.LicenseKey');
-  fetch('https://staging-random-aio.vercel.app/api/license/auth', {
+  fetch('https://aladdin-aio.com/api/license/auth', {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -258,7 +259,7 @@ const checkLogin = async () => {
 
 const intervalAuth = async () => {
   const key = store.get('settings.LicenseKey');
-  fetch('https://staging-random-aio.vercel.app/api/license/auth', {
+  fetch('https://aladdin-aio.com/api/license/auth', {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -283,15 +284,14 @@ const createWindow = async () => {
     transparent: true,
     maximizable: false,
     resizable: true,
-    //  icon: getAssetPath('icon.png'),
+    icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
       enableRemoteModule: true,
-      // devTools: false,
+      devTools: false,
       contextIsolation: false,
       allowRunningInsecureContent: true,
-      preload: path.join(__dirname, 'preload.js'),
     },
   });
   // TaskClient.setWindow(mainWindow);
@@ -337,11 +337,11 @@ const createWindow = async () => {
             start: dateNow,
           },
           assets: {
-            large_image: 'logo', // large image key from developer portal > rich presence > art assets
+            large_image: 'logo',
             large_text: 'Working Magic',
           },
           buttons: [
-            { label: 'Twitter', url: 'https://github.com' },
+            { label: 'Twitter', url: 'https://twitter.com/AladdinAIO' },
             { label: 'Discord', url: 'https://github.com' },
           ],
         },
@@ -354,7 +354,6 @@ const createWindow = async () => {
 
     client.login({
       clientId: '753302024623489085', // put the client id from the dev portal here
-      clientSecret: 'Ocq7TjUer2hHsmmhgMKBLD0yTMsghgf8', // put the client secret from  dev portal here
     });
   });
 
@@ -435,7 +434,7 @@ ipcMain.on('minimize-window', () => {
 
 ipcMain.on('deactivate', async (event) => {
   const response = await fetch(
-    'https://staging-random-aio.vercel.app/api/license/reset',
+    'https://aladdin-aio.com/api/license/reset',
     {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1180,7 +1179,7 @@ ipcMain.on('test:proxy', async (event, groupID, id, proxy) => {
 ipcMain.on('checkAuth', async (event, info) => {
   const key = store.get('settings.LicenseKey');
   const response = await requestClient(
-    'https://staging-random-aio.vercel.app/api/license/auth',
+    'https://aladdin-aio.com/api/license/auth',
     {
       headers: {
         'Content-Type': 'application/json',
@@ -1200,7 +1199,7 @@ ipcMain.on('checkAuth', async (event, info) => {
 });
 ipcMain.on('activate', async (event, key) => {
   const response = await requestClient(
-    'https://staging-random-aio.vercel.app/api/license/auth',
+    'https://aladdin-aio.com/api/license/auth',
     {
       headers: {
         'Content-Type': 'application/json',
@@ -1303,7 +1302,7 @@ ipcMain.on('show:harvester', (event, arg, name) => {
     width: 400, // 397
     show: true,
     center: true,
-    //  icon: getAssetPath('icon.png'),
+     icon: getAssetPath('icon.png'),
     fullscreen: false,
     maximizable: false,
     minimizable: false,
@@ -1317,6 +1316,7 @@ ipcMain.on('show:harvester', (event, arg, name) => {
       enableRemoteModule: true,
       contextIsolation: false,
       plugins: true,
+      devTools: false,
       // partition: `persist:captcha-${arg}`,
       webviewTag: true,
       preload: path.join(__dirname, '../modules/Harvester/preload.js'),

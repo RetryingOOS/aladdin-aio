@@ -108,7 +108,7 @@ class Dashboard extends React.Component {
 
   async fetchAnnouncements() {
     const response = await fetch(
-      'https://staging-random-aio.vercel.app/api/announcements'
+      'https://aladdin-aio.com/api/announcements'
     );
     const responseJSON = await response.json();
     this.announcements = responseJSON.announcements;
@@ -220,7 +220,7 @@ class Dashboard extends React.Component {
               'linear-gradient(90deg, hsla(238, 100%, 71%, 1) 0%, hsla(295, 100%, 84%, 1) 100%)',
             position: 'absolute',
             left: '36rem',
-            width: '16rem',
+            width: '17rem',
             height: '6rem',
             top: '1.6rem',
           }}

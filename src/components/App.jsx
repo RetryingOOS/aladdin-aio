@@ -178,6 +178,7 @@ class TasksTable extends React.Component {
 
   startTask = (task) => {
     ipcRenderer.send('start:tasks', task);
+    this.props.dispatch({ type: 'update', obj: { activeTasks: task.id } });
   };
 
   stopTasks = (task) => {

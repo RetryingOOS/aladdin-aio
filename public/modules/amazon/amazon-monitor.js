@@ -20,8 +20,28 @@ class AmazonMonitor extends Tasks {
     this.sendStatus('Stopped');
   }
 
+  async getInfo() {
+    const original = this.store.get(`sessions.amazon.${this.taskInfo.session}`);
+    let firstCookie = true;
+    const cookies = original.cookies;
+    for (let i = 0; i < cookies.length; i++) {
+      if (firstCookie) {
+        const cookieValue = cookies[i].value;
+        this.cookieString += `${cookies[i].name}=${cookieValue}`;
+        firstCookie = false;
+      } else {
+        const cookieValue = cookies[i].value;
+        this.cookieString += ` ;${cookies[i].name}=${cookieValue}`;
+      }
+      if (cookies[i].name === 'session-id') {
+        this.sessionID = cookies[i].value;
+      }
+    }
+  }
+
   async initialize() {
     this.itemID = this.taskInfo.sku;
+    await this.getInfo()
     this.sendStatus('Starting Task');
     await this.getRandomProxy();
     await this.monitor();
@@ -35,6 +55,7 @@ class AmazonMonitor extends Tasks {
           clearInterval(interval);
           this.count = 0;
           resolve();
+          return
         }
 
         if (this.count === 60) { // if it has been run 5 times, we resolve the promise
@@ -49,7 +70,7 @@ class AmazonMonitor extends Tasks {
     if (this.cancelled) return;
     this.sendStatus('Monitoring');
     const req = await this.requestClient(
-      `https://amazon.com/portal-migration/aod?asin=${this.itemID}&m=ATVPDKIKX0DER`,
+      `https://www.amazon.com/portal-migration/aod?asin=${this.itemID}&m=ATVPDKIKX0DER`,
       {
         userAgent:
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
@@ -69,6 +90,7 @@ class AmazonMonitor extends Tasks {
           'sec-fetch-site': 'none',
           'sec-fetch-user': '?1',
           'upgrade-insecure-requests': '1',
+          // cookie: this.cookieString
         },
         proxy: this.proxy ? this.proxy : '',
       },

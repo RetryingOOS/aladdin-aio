@@ -38,65 +38,6 @@ const store = new Store();
 
 const packageJson = require('../package.json');
 
-function mustNotExportKey(key) {
-  ipcMain.on('check', (e, arr) => {
-    if (arr.length !== key.length) {
-      e.returnValue = {
-        err: null,
-        data: false,
-      };
-      return;
-    }
-    for (let i = 0; i < key.length; i++) {
-      try {
-        if (key[i] !== arr[i]) {
-          e.returnValue = {
-            err: null,
-            data: false,
-          };
-          return;
-        }
-      } catch (e) {
-        e.returnValue = {
-          err: e.message,
-          data: false,
-        };
-        return;
-      }
-    }
-    e.returnValue = {
-      err: null,
-      data: true,
-    };
-  });
-}
-
-module.exports = function bootstrap (k) {
-  if (!Array.isArray(k) || k.length === 0) {
-    throw new Error('Failed to bootstrap application.')
-  }
-  WindowManager.__SECRET_KEY__ = k
-  
-  if (!process.env.ELECTRON_RUN_AS_NODE) {
-    mustNotExportKey(k)
-    if (app.whenReady === 'function') {
-      app.whenReady().then(main).catch(err => console.log(err))
-    } else {
-      app.on('ready', main)
-    }
-  } else {
-    console.log(k)
-    assert.strictEqual(k.length, 32, 'Key length error.')
-  }
-}
-
-for (let i = 0; i < process.argv.length; i++) {
-  const arg = process.argv[i]
-  if (arg.startsWith('--inspect') || arg.startsWith('--remote-debugging-port')) {
-    throw new Error('No')
-  }
-}
-
 const activity = {
   details: 'Working Magic',
   state: `Version ${packageJson.version}`,
@@ -196,7 +137,27 @@ const createLoginWindow = async () => {
   loginWindow.setFullScreen(true);
   loginWindow.removeMenu(); // #TODO
   // mainWindow.webContents.openDevTools();
-
+  for (let i = 0; i < process.argv.length; i++) {
+    const arg = process.argv[i].toLowerCase();
+    if (
+      arg.startsWith('--inspect') ||
+      arg.startsWith('--remote-debugging-port') ||
+      arg.startsWith('--inspect-brk') ||
+      arg.startsWith('--inspect-port') ||
+      arg.startsWith('--debug') ||
+      arg.startsWith('--debug-brk') ||
+      arg.startsWith('--debug-port') ||
+      arg.startsWith('--inspect-brk-node') ||
+      arg.startsWith('--inspect-publish-uid') ||
+      arg.startsWith('--javascript-harmony') ||
+      arg.startsWith('--js-flags') ||
+      arg.startsWith('--remote-debugging-pipe') ||
+      arg.startsWith('--remote-debugging-port') ||
+      arg.startsWith('--wait-for-debugger-children')
+    ) {
+      app.quit();
+    }
+  }
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   loginWindow.webContents.on('did-finish-load', () => {
@@ -304,13 +265,39 @@ const createWindow = async () => {
       ? 'http://localhost:3000'
       : `file://${path.join(__dirname, '../build/index.html')}#/login')}`
   );
-  
+
   mainWindow.setMenu(null);
   mainWindow.setFullScreenable(false);
   mainWindow.setFullScreen(true);
   mainWindow.removeMenu(); // #TODO
   if (isDev) {
     mainWindow.webContents.openDevTools();
+  }
+
+  mainWindow.webContents.on('devtools-opened', () => {
+    mainWindow.webContents.closeDevTools();
+  });
+
+  for (let i = 0; i < process.argv.length; i++) {
+    const arg = process.argv[i].toLowerCase();
+    if (
+      arg.startsWith('--inspect') ||
+      arg.startsWith('--remote-debugging-port') ||
+      arg.startsWith('--inspect-brk') ||
+      arg.startsWith('--inspect-port') ||
+      arg.startsWith('--debug') ||
+      arg.startsWith('--debug-brk') ||
+      arg.startsWith('--debug-port') ||
+      arg.startsWith('--inspect-brk-node') ||
+      arg.startsWith('--inspect-publish-uid') ||
+      arg.startsWith('--javascript-harmony') ||
+      arg.startsWith('--js-flags') ||
+      arg.startsWith('--remote-debugging-pipe') ||
+      arg.startsWith('--remote-debugging-port') ||
+      arg.startsWith('--wait-for-debugger-children')
+    ) {
+      app.quit();
+    }
   }
 
   // @TODO: Use 'ready-to-show' event
@@ -434,16 +421,13 @@ ipcMain.on('minimize-window', () => {
 });
 
 ipcMain.on('deactivate', async (event) => {
-  const response = await fetch(
-    'https://aladdin-aio.com/api/license/reset',
-    {
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        license: store.get('settings.LicenseKey'),
-      }),
-      method: 'POST',
-    }
-  );
+  const response = await fetch('https://aladdin-aio.com/api/license/reset', {
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      license: store.get('settings.LicenseKey'),
+    }),
+    method: 'POST',
+  });
   app.quit();
 });
 
@@ -529,7 +513,8 @@ const testWebhook = async (hook) => {
         ],
         footer: {
           text: 'Aladdin AIO © 2021',
-          "icon_url": "https://cdn.discordapp.com/attachments/458401204381155359/876613694782603295/alternative.png"
+          icon_url:
+            'https://cdn.discordapp.com/attachments/458401204381155359/876613694782603295/alternative.png',
         },
         timestamp: `${new Date()}`,
         thumbnail: {
@@ -695,7 +680,7 @@ const startTask = async (task) => {
   if (tasks[taskID]) return;
 
   if (task.mode === 'amazonNormal') {
-    tasks[taskID] = new ShopifyTask(taskID);
+    tasks[taskID] = new AmazonRegular(taskID);
   } else if (task.mode === 'amazonMobile') {
     console.log('Amazon Mobile mode not implemented yet');
   } else if (task.mode === 'amazonTurbo') {
@@ -1304,7 +1289,7 @@ ipcMain.on('show:harvester', (event, arg, name) => {
     width: 400, // 397
     show: true,
     center: true,
-     icon: getAssetPath('icon.png'),
+    icon: getAssetPath('icon.png'),
     fullscreen: false,
     maximizable: false,
     minimizable: false,

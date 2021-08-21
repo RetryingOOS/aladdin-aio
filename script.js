@@ -2,9 +2,11 @@ const bytenode = require('bytenode');
 const v8 = require('v8');
 const path = require('path');
 const fs = require('fs');
-const rimraf = require("rimraf");
+const rimraf = require('rimraf');
+const JavaScriptObfuscator = require('javascript-obfuscator');
 
 v8.setFlagsFromString('--no-lazy');
+v8.setFlagsFromString('--no-flush-bytecode');
 function compileFile(file) {
   if (fs.existsSync(file)) {
     bytenode.compileFile(file);
@@ -14,7 +16,57 @@ function compileFile(file) {
   return;
 }
 
+function obfuscateDir(dirPath) {
+  var dirents = fs.readdirSync(dirPath, {
+    encoding: 'utf8',
+    withFileTypes: true,
+  });
+  for (let i = 0; i < dirents.length; i++) {
+    let dirent = dirents[i];
 
+    if (dirent.isDirectory()) {
+      obfuscateDir(path.join(dirPath, dirent.name));
+      continue;
+    }
+
+    if (path.extname(dirent.name) !== '.js') continue;
+
+    let filePath = path.join(dirPath, dirent.name);
+
+    if (!filePath.includes('static')) {
+      let content = fs.readFileSync(filePath, { encoding: 'utf8' });
+
+      let obfuscator = JavaScriptObfuscator.obfuscate(content, {
+        compact: true,
+        simplify: true,
+        controlFlowFlattening: false,
+        deadCodeInjection: true,
+        deadCodeInjectionThreshold: 0.1,
+        debugProtection: false,
+        debugProtectionInterval: false,
+        disableConsoleOutput: false,
+        identifierNamesGenerator: 'hexadecimal',
+        log: false,
+        renameGlobals: false,
+        rotateStringArray: true,
+        selfDefending: false,
+        stringArray: true,
+        stringArrayEncoding: ['rc4'],
+        stringArrayThreshold: 0.75,
+        transformObjectKeys: false,
+        unicodeEscapeSequence: false,
+      });
+      let obfuscatedCode = obfuscator.getObfuscatedCode();
+
+      fs.writeFileSync(filePath, obfuscatedCode, {
+        encoding: 'utf8',
+        flag: 'w+',
+      });
+    }
+  }
+}
+
+obfuscateDir(path.join(__dirname, './build'));
 
 compileFile(path.join(__dirname, './build/electron.js'));
 // compileFile(path.join(__dirname, './build/preload.js'));
@@ -46,44 +98,19 @@ compileFile(path.join(__dirname, './build/asar.js'));
 compileFile(path.join(__dirname, './build/Client/dist/index.js'));
 
 try {
-rimraf.sync(path.join(__dirname, './build/Client/golang'));
+  rimraf.sync(path.join(__dirname, './build/Client/golang'));
 } catch (e) {}
 try {
-rimraf.sync(path.join(__dirname, './build/Client/src'));
-} catch (e) {}
-
-try {
-fs.unlinkSync(path.join(__dirname, './build/Client/package.json'));
+  rimraf.sync(path.join(__dirname, './build/Client/src'));
 } catch (e) {}
 
 try {
-fs.unlinkSync(path.join(__dirname, './build/Client/tsconfig.json'));
+  fs.unlinkSync(path.join(__dirname, './build/Client/package.json'));
 } catch (e) {}
 
-// fs.unlinkSync(path.join(__dirname,'../build/electron.js'))
-// fs.unlinkSync(path.join(__dirname,'../build/preload.js'))
-// fs.unlinkSync(path.join(__dirname,'../build/Request.js'))
-// fs.unlinkSync(path.join(__dirname,'../build/tasks.js'))
-
-// fs.unlinkSync(path.join(__dirname,'../build/modules/amazon/amazon-regular.js'))
-// fs.unlinkSync(path.join(__dirname,'../build/modules/amazon/amazon-mobile.js'))
-// fs.unlinkSync(path.join(__dirname,'../build/modules/amazon/amazon-smile.js'))
-// fs.unlinkSync(path.join(__dirname,'../build/modules/amazon/amazon-login.js'))
-// fs.unlinkSync(path.join(__dirname,'../build/modules/amazon/amazon-monitor.js'))
-
-// fs.unlinkSync(path.join(__dirname,'../build/modules/bestbuy/bestbuy.js'))
-
-// fs.unlinkSync(path.join(__dirname,'../build/modules/panini/panini.js'))
-
-// fs.unlinkSync(path.join(__dirname,'../build/modules/shopify/shopify.js'))
-
-// fs.unlinkSync(path.join(__dirname,'../build/modules/target/target.js'))
-
-// fs.unlinkSync(path.join(__dirname,'../build/modules/notify.js'))
-
-// fs.unlinkSync(path.join(__dirname,'../build/modules/proxyPing.js'))
-
-// fs.unlinkSync(path.join(__dirname,'../build/modules/target-login.js'))
+try {
+  fs.unlinkSync(path.join(__dirname, './build/Client/tsconfig.json'));
+} catch (e) {}
 
 fs.writeFileSync(
   path.join(__dirname, './build/electron.js'),

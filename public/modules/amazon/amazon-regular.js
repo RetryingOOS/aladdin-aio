@@ -444,13 +444,17 @@ class AmazonRegular extends Tasks {
     //   .split('"')[1];
     try {
       this.closeHref = $('.prime-nothanks-button').first().attr('href').trim();
-    } catch (e) {}
+      this.needToBeClosed = true;
+    } catch (e) {
+      this.needToBeClosed = false;
+    }
 
-    if (this?.closeHref) {
-      const req = await this.requestClient(
+    if (this.needToBeClosed) {
+      this.sendStatus('CLosing prime');
+      console.log('Closing prime');
+      await this.requestClient(
         `https://amazon.com${this.closeHref}`,
         {
-          method: 'GET',
           headers: {
             rtt: '50',
             'accept-encoding': 'gzip, deflate, br',
@@ -476,9 +480,9 @@ class AmazonRegular extends Tasks {
           proxy: this.proxy ? this.proxy : '',
         }
       );
-      this.closeHref = false;
+      this.needToBeClosed = false
 
-      await this.fastCheckout();
+      return await this.fastCheckout();
     }
 
     this.csrfToken = encodeURIComponent(
@@ -535,13 +539,33 @@ class AmazonRegular extends Tasks {
       'POST'
     );
 
-    if (req.statusCode !== 200 && this.checkoutAttempts < 5) {
-      this.sendStatus(req.statusCode, 'Error');
-      await this.sleep(this.getRandomInt(1000, 2000));
-      this.checkoutAttempts++;
-      await this.staticDecoupledReq();
+    // if (req.status !== 200 && this.checkoutAttempts < 5) {
+    //   this.sendStatus(req.status, 'Error');
+    //   await this.sleep(this.getRandomInt(1000, 2000));
+    //   this.checkoutAttempts++;
+    //   await this.staticDecoupledReq();
+    // } else {
+    //   this.checkoutAttempts = 0;
+    //   this.cancelled = true
+    // }
+
+    // if (req.status <= 300) {
+    //   const $ = await cheerio.load(req.body);
+    //   if (!$('meta').attr('content')) {
+    //       this.sendStatus('Failed Checkout')
+    //   } else if ($('meta').attr('content').indexOf('thankyou') > -1) {
+    //     this.sendStatus('Checkout Successful');
+    //   }
+    // }
+    console.log(req.status)
+    console.log('here')
+
+    if (req.status == 200) {
+      this.sendStatus('Checkout Successful');
+    } else {
+      this.sendStatus('Error');
     }
-    this.sendStatus('Checked Out');
+    // this.sendStatus('Checked Out');
 
     await this.sendSuccess({
       sku: this.itemID,
@@ -557,20 +581,6 @@ class AmazonRegular extends Tasks {
     });
   }
 
-  async webhook(msg) {
-    const content = {
-      content: msg,
-    };
-
-    await Request(
-      'https://discord.com/api/webhooks/798655800431738885/gzpTO29OlnqHTPKskCTRr48u2h8ziPxZC2CxBODIr3Bsk0L0lJMNs2wJjojGYpk5_vDI',
-      {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(content),
-      }
-    );
-  }
 }
 
 module.exports = AmazonRegular;

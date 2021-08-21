@@ -4,13 +4,15 @@ const fs = require('fs')
 const asar = require('asar')
 const getPath = require('./path.js')
 
-const key = Buffer.from(fs.readFileSync(getPath('src/key.txt'), 'utf8').trim().split(',').map(v => Number(v.trim())))
+const key = Buffer.from(fs.readFileSync(getPath('source/key.txt'), 'utf8').trim().split(',').map(v => Number(v.trim())))
 
-const asarTarget = process.platform === 'darwin' ? getPath(`test/Electron.app/Contents/Resources/app.asar`) : getPath('./test/resources/app.asar')
-asar.createPackageWithOptions(getPath('./app'), asarTarget, {
+exports.default = async ({ appOutDir, packager }) => {
+console.log(packager.getResourcesDir(appOutDir), '\n')
+const asarTarget = path.join(packager.getResourcesDir(appOutDir), 'app.asar');
+asar.createPackageWithOptions(getPath('./build'), asarTarget, {
   unpack: '*.node',
   transform (filename) {
-    if (path.extname(filename) === '.js' && path.basename(filename) !== 'hack.js') {
+    if (path.extname(filename) === '.jsc' || path.extname(filename) === '.js' && path.basename(filename) !== 'hack.js') {
       const iv = crypto.randomBytes(16)
       var append = false
       var cipher = crypto.createCipheriv('aes-256-cbc', key, iv)
@@ -35,3 +37,4 @@ const target = process.platform === 'darwin' ? getPath(`test/Electron.app/Conten
 asar.createPackageWithOptions(getPath('node_modules_asar'), target, {
   unpack: '*.node'
 })
+}

@@ -1,6 +1,6 @@
 {
   "variables": {
-    "module_path": "./app",
+    "module_path": "./build",
     "PRODUCT_DIR": "./build/Release"
   },
   'target_defaults': {
@@ -21,25 +21,12 @@
       ]
     },
     {
-      'target_name': 'renderer',
-      'sources': [
-        'source/main.cpp',
-        'source/aes/aes.c'
-      ],
-      'includes': [
-        './common.gypi'
-      ],
-      'defines':[
-        '_TARGET_ELECTRON_RENDERER_'
-      ]
-    },
-    {
       "target_name": "action_after_build",
       "type": "none",
-      "dependencies": [ "main", "renderer" ],
+      "dependencies": [ "main" ],
       "copies": [
         {
-          "files": [ "<(PRODUCT_DIR)/main.node", "<(PRODUCT_DIR)/renderer.node" ],
+          "files": [ ".app/main.node" ],
           "destination": "<(module_path)"
         }
       ]

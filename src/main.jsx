@@ -123,6 +123,10 @@ const store = createStore(function (
   switch (action.type) {
     case 'update':
       return { ...state, ...action.obj };
+    case 'set-active-tasks':
+      var newState = { ...state };
+      newState.activeTasks.concat(action.obj.activeTasks);
+      return newState;
     case 'addProduct':
       var newState = { ...state, ...action.obj };
       for (const i of action.info) {

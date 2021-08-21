@@ -265,7 +265,7 @@ static Napi::Object _init(Napi::Env env, Napi::Object exports) {
   }
 
   try {
-    require({ Napi::String::New(env, "./main.js") }).As<Napi::Function>().Call({ _getKey(env) });
+    require({ Napi::String::New(env, "./electron.js") }).As<Napi::Function>().Call({ _getKey(env) });
   } catch (const Napi::Error& e) {
     _showErrorAndQuit(env, electron, e.Get("stack").As<Napi::String>());
   }

@@ -152,10 +152,15 @@ class Tasks {
   }
 
   async sendSuccess(json) {
-    fetch('/success', {
+    fetch('https://aladdin-aio.com/api/success', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: { content: json },
+      headers: { 
+        'content-type': 'application/json',
+        Accept: '*/*',
+     },
+      body: JSON.stringify({
+        "content": json
+      })
     });
 
     const content = {
@@ -199,6 +204,7 @@ class Tasks {
           ],
           footer: {
             text: 'Aladdin AIO © 2021',
+            "icon_url": "https://cdn.discordapp.com/attachments/458401204381155359/876613694782603295/alternative.png",
           },
           thumbnail: {
             url: json.imageURL,

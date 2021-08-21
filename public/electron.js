@@ -304,6 +304,7 @@ const createWindow = async () => {
       ? 'http://localhost:3000'
       : `file://${path.join(__dirname, '../build/index.html')}#/login')}`
   );
+  
   mainWindow.setMenu(null);
   mainWindow.setFullScreenable(false);
   mainWindow.setFullScreen(true);
@@ -528,6 +529,7 @@ const testWebhook = async (hook) => {
         ],
         footer: {
           text: 'Aladdin AIO © 2021',
+          "icon_url": "https://cdn.discordapp.com/attachments/458401204381155359/876613694782603295/alternative.png"
         },
         timestamp: `${new Date()}`,
         thumbnail: {
@@ -693,7 +695,7 @@ const startTask = async (task) => {
   if (tasks[taskID]) return;
 
   if (task.mode === 'amazonNormal') {
-    tasks[taskID] = new AmazonRegular(taskID);
+    tasks[taskID] = new ShopifyTask(taskID);
   } else if (task.mode === 'amazonMobile') {
     console.log('Amazon Mobile mode not implemented yet');
   } else if (task.mode === 'amazonTurbo') {

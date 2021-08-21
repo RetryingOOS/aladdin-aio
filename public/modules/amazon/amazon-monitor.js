@@ -16,8 +16,8 @@ class AmazonMonitor extends Tasks {
   }
 
   stop() {
-    this.sendStatus('Stopped');
     this.cancelled = true;
+    this.sendStatus('Stopped');
   }
 
   async initialize() {
@@ -29,8 +29,13 @@ class AmazonMonitor extends Tasks {
 
   sleep_60 = () => new Promise((resolve, reject) => {
     var interval = setInterval(async () => {
-        var res = this.sendStatus(`Sleeping for ${60 - this.count} seconds`);
+        this.sendStatus(`Sleeping for ${60 - this.count} seconds`);
         this.count += 1;
+        if (this.canncelled) {
+          clearInterval(interval);
+          this.count = 0;
+          resolve();
+        }
 
         if (this.count === 60) { // if it has been run 5 times, we resolve the promise
             clearInterval(interval);

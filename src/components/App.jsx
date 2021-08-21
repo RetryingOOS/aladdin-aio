@@ -178,7 +178,7 @@ class TasksTable extends React.Component {
 
   startTask = (task) => {
     ipcRenderer.send('start:tasks', task);
-    this.props.dispatch({ type: 'update', obj: { activeTasks: task.id } });
+    this.props.dispatch({ type: 'set-active-tasks', obj: { activeTasks: task.id } });
   };
 
   stopTasks = (task) => {
@@ -1042,11 +1042,11 @@ class TasksTable extends React.Component {
                             // }}
                           />
                           <Icon
-                            icon={rowData.active ? 'stop2' : 'play'}
+                            icon={this.props.state.activeTasks.includes(rowData.id) ? 'stop2' : 'play'}
                             size="lg"
                             style={{
                               color: `${
-                                rowData.active ? 'white' : 'springgreen'
+                                this.props.state.activeTasks.includes(rowData.id) ? 'white' : 'springgreen'
                               }`,
                               paddingRight: '5px',
                             }}

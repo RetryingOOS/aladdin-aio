@@ -549,19 +549,20 @@ class AmazonRegular extends Tasks {
     //   this.cancelled = true
     // }
 
-    // if (req.status <= 300) {
-    //   const $ = await cheerio.load(req.body);
-    //   if (!$('meta').attr('content')) {
-    //       this.sendStatus('Failed Checkout')
-    //   } else if ($('meta').attr('content').indexOf('thankyou') > -1) {
-    //     this.sendStatus('Checkout Successful');
-    //   }
-    // }
+    this.sendStatus('Checking Order')
+    if (req.status <= 300) {
+      const $ = await cheerio.load(req.body);
+      if (!$('meta').attr('content')) {
+          this.sendStatus('Failed Checkout')
+      } else if ($('meta').attr('content').indexOf('thankyou') > -1) {
+        this.sendStatus('Checkout Successful');
+      }
+    }
     console.log(req.status)
-    console.log('here')
+    // console.log('here')
 
     if (req.status == 200) {
-      this.sendStatus('Checkout Successful');
+      this.sendStatus('Checked Out');
     } else {
       this.sendStatus('Error');
     }

@@ -28,11 +28,11 @@ class AmazonLogin extends Tasks {
       this.accountInfo = accounts.filter(
         (item) => item.id === this.info.account
       )[0];
-      this.ip = this.accountInfo.proxy?.split(':')[0];
-      this.port = this.accountInfo.proxy?.split(':')[1];
-      this.user = this.accountInfo.proxy?.split(':')[2];
-      this.password = this.accountInfo.proxy?.split(':')[3];
-      console.log(this.accountInfo);
+      this.ip = this.info.proxy?.split(':')[0];
+      this.port = this.info.proxy?.split(':')[1];
+      this.user = this.info.proxy?.split(':')[2];
+      this.password = this.info.proxy?.split(':')[3];
+      console.log(this.info);
     } catch (e) {
       this.sessionStatus('Account not found');
       throw new Error('Account not found');

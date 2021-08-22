@@ -25,6 +25,7 @@
     "got": "^11.8.2",
     "history": "^5.0.1",
     "hpagent": "^0.1.2",
+    "hwid": "^0.4.1",
     "jquery": "^3.6.0",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.1",
@@ -88,7 +89,7 @@
     ],
     "afterPack": "./pack"
   },
-  "main": "build/electron.js",
+  "main": "public/electron.js",
   "homepage": "./",
   "devDependencies": {
     "asarmor": "^1.8.0",

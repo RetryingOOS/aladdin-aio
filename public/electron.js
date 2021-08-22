@@ -198,12 +198,13 @@ const createLoginWindow = async () => {
 };
 
 const checkLogin = async () => {
+  const hwid = await getHWID();
   const key = store.get('settings.LicenseKey');
   fetch('https://aladdin-aio.com/api/license/auth', {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ license: key, machineID: '' }),
+    body: JSON.stringify({ license: key, machineID: hwid }),
     method: 'POST',
   })
     .then((response1) => response1.json())
@@ -220,11 +221,12 @@ const checkLogin = async () => {
 
 const intervalAuth = async () => {
   const key = store.get('settings.LicenseKey');
+  const hwid = await getHWID();
   fetch('https://aladdin-aio.com/api/license/auth', {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ license: key, machineID: '' }),
+    body: JSON.stringify({ license: key, machineID: hwid }),
     method: 'POST',
   })
     .then((response1) => response1.json())
@@ -744,7 +746,7 @@ ipcMain.on('getLogs', (event, taskID) => {
 const TargetLogin = require('./modules/target-login');
 const AmazonLogin = require('./modules/amazon/amazon-login');
 const ProxyPing = require('./modules/proxyPing');
-
+import { getHWID } from 'hwid'
 //  import TargetLogin from './modules/target-login';
 //  import AmazonLogin from './modules/amazon/amazon-login';
 //  import ProxyPing from './modules/proxyPing';
@@ -1165,13 +1167,14 @@ ipcMain.on('test:proxy', async (event, groupID, id, proxy) => {
 
 ipcMain.on('checkAuth', async (event, info) => {
   const key = store.get('settings.LicenseKey');
+  const hwid = await getHWID()
   const response = await requestClient(
     'https://aladdin-aio.com/api/license/auth',
     {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ license: key, machineID: '' }),
+      body: JSON.stringify({ license: key, machineID: hwid }),
     },
     'POST'
   );
@@ -1184,14 +1187,18 @@ ipcMain.on('checkAuth', async (event, info) => {
     event.returnValue = false;
   }
 });
+
+
+
 ipcMain.on('activate', async (event, key) => {
+  const hwid = await getHWID()
   const response = await requestClient(
     'https://aladdin-aio.com/api/license/auth',
     {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ license: key, machineID: '' }),
+      body: JSON.stringify({ license: key, machineID: hwid }),
     },
     'POST'
   );

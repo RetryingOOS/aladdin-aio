@@ -52,6 +52,7 @@ function obfuscateDir(dirPath) {
         selfDefending: false,
         stringArray: true,
         stringArrayEncoding: ['rc4'],
+        target: 'node',
         stringArrayThreshold: 0.75,
         transformObjectKeys: false,
         unicodeEscapeSequence: false,
@@ -66,7 +67,7 @@ function obfuscateDir(dirPath) {
   }
 }
 
-obfuscateDir(path.join(__dirname, './build'));
+// obfuscateDir(path.join(__dirname, './build'));
 
 compileFile(path.join(__dirname, './build/electron.js'));
 // compileFile(path.join(__dirname, './build/preload.js'));
@@ -95,7 +96,7 @@ compileFile(path.join(__dirname, './build/modules/target-login.js'));
 
 compileFile(path.join(__dirname, './build/asar.js'));
 
-compileFile(path.join(__dirname, './build/Client/dist/index.js'));
+// compileFile(path.join(__dirname, './build/Client/dist/index.js'));
 
 try {
   rimraf.sync(path.join(__dirname, './build/Client/golang'));

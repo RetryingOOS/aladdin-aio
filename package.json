@@ -17,6 +17,7 @@
     "chrome-paths": "^1.0.1",
     "cogo-toast": "^4.2.3",
     "concurrently": "^6.2.1",
+    "craco": "^0.0.3",
     "discord-rpc": "^4.0.1",
     "electron-is-dev": "^2.0.0",
     "electron-log": "^4.4.1",

@@ -7,8 +7,8 @@ exports.default = async ({ appOutDir, packager }) => {
     console.log(`applying asarmor protections to ${asarPath}`);
     const asarmor = new Asarmor(asarPath);
     asarmor.applyProtection(new Trashify(['.git', '.env', '.vscode', '.idea', '.env.local']));
-    asarmor.applyProtection(Trashify.Randomizers.randomExtension(['js', 'ts', 'txt']));
-    asarmor.applyProtection(new Bloat(20));
+    // asarmor.applyProtection(Trashify.Randomizers.randomExtension(['js', 'ts', 'txt']));
+    // asarmor.applyProtection(new Bloat(20));
     await asarmor.write(asarPath);
   } catch (err) {
     console.error(err);

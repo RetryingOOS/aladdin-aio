@@ -7,7 +7,7 @@ const got = require('got');
 const { HttpsProxyAgent } = require('hpagent');
 const Tasks = require('../../tasks');
 
-class AmazonRegular extends Tasks {
+class AmazonMobile extends Tasks {
   constructor(props) {
     super(props);
     this.itemID = 'B00006IFB4';
@@ -558,4 +558,4 @@ class AmazonRegular extends Tasks {
   }
 }
 
-module.exports = AmazonRegular;
+module.exports = AmazonMobile;

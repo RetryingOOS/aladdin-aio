@@ -10,10 +10,10 @@ v8.setFlagsFromString('--no-flush-bytecode');
 function compileFile(file) {
   if (fs.existsSync(file)) {
     bytenode.compileFile(file);
+    console.log(`${file} compiled`);
     fs.unlinkSync(file);
     return;
   }
-  return;
 }
 
 function obfuscateDir(dirPath) {
@@ -46,7 +46,7 @@ function obfuscateDir(dirPath) {
         debugProtectionInterval: false,
         disableConsoleOutput: false,
         identifierNamesGenerator: 'hexadecimal',
-        log: false,
+        log: true,
         renameGlobals: false,
         rotateStringArray: true,
         selfDefending: false,
@@ -55,7 +55,8 @@ function obfuscateDir(dirPath) {
         target: 'node',
         stringArrayThreshold: 0.75,
         transformObjectKeys: false,
-        unicodeEscapeSequence: false,
+        unicodeEscapeSequence: true,
+        splitStringsChunkLength: 5,
       });
       let obfuscatedCode = obfuscator.getObfuscatedCode();
 
@@ -69,8 +70,10 @@ function obfuscateDir(dirPath) {
 
 // obfuscateDir(path.join(__dirname, './build'));
 
+compileFile(path.join(__dirname, './build/preload.js'));
+// fs.copyFileSync('./public/electron.js', './build/electron.js');
 compileFile(path.join(__dirname, './build/electron.js'));
-// compileFile(path.join(__dirname, './build/preload.js'));
+
 compileFile(path.join(__dirname, './build/Request.js'));
 compileFile(path.join(__dirname, './build/tasks.js'));
 
@@ -122,11 +125,7 @@ fs.writeFileSync(
   
   v8.setFlagsFromString('--no-lazy');
   
-  if(fs.existsSync('./electron.js')){
-      require('./electron.js')
-  }else{
-      require('./electron.jsc')
-  }
+  require('./electron.jsc')
 `
 );
 

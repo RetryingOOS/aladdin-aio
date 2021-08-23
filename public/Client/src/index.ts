@@ -383,6 +383,6 @@ const initCycleTLS = async (
 export default initCycleTLS;
 
 // CommonJS support for default export
-// module.exports = initCycleTLS;
-// module.exports.default = initCycleTLS;
-// module.exports.__esModule = true;
+module.exports = initCycleTLS;
+module.exports.default = initCycleTLS;
+module.exports.__esModule = true;

@@ -384,14 +384,14 @@ class Proxies extends React.Component {
             }}
           >
             <Button
-              style={{ position: 'relative', left: '50%' }}
+              style={{ position: 'relative', float: 'right' }}
               onClick={this.editProxyGroup}
               appearance="primary"
             >
               <Icon icon="spinner" /> Edit Group
             </Button>
             <Button
-              style={{ position: 'relative', left: '80%' }}
+              style={{ position: 'relative', float: 'right' }}
               onClick={this.testAllProxies}
               appearance="primary"
             >

@@ -174,7 +174,7 @@ class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activated: true,
+      activated: false,
       version: '1.1.9',
     };
   }
@@ -184,18 +184,14 @@ class Index extends React.Component {
     this.setState({ activated: true, key });
   };
 
-  checkActivation = () => {
-    const checkActivation = ipcRenderer.sendSync('checkAuth');
-    if (checkActivation) {
-      this.setState({ activated: true });
-    }
-  };
 
   componentDidMount() {
     // this.checkActivation();
     const checkActivation = ipcRenderer.sendSync('checkAuth');
-    if (checkActivation) {
+    if (checkActivation.success) {
       this.setState({ activated: true });
+    } else {
+      this.setState({ activated: false });
     }
     ipcRenderer.on('log', (e, info) => {
       store.dispatch({ type: 'addLog', info });
@@ -217,15 +213,15 @@ class Index extends React.Component {
 
     this.fetchAnnouncements();
 
-    // const info = ipcRenderer.sendSync('get:info');
-    // store.dispatch({
-    //   type: 'update',
-    //   obj: {
-    //     discordAvatar: info.avatar,
-    //     discordUsername: info.username,
-    //     licenseKey: info.LicenseKey,
-    //   },
-    // });
+    const info = ipcRenderer.sendSync('get:info');
+    store.dispatch({
+      type: 'update',
+      obj: {
+        discordAvatar: info.avatar,
+        discordUsername: info.username,
+        licenseKey: info.LicenseKey,
+      },
+    });
   }
 
   fetchAnnouncements() {
@@ -238,11 +234,6 @@ class Index extends React.Component {
         })
       );
   }
-
-  checkActivation = () => {
-    var auth = ipcRenderer.sendSync('checkAuth');
-    this.setState({ activated: auth.success, key: auth });
-  };
 
   render() {
     return (

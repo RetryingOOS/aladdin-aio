@@ -27,46 +27,6 @@ const DoughnutData = {
 };
 
 const data = [
-  {
-    title: 'Sony PlayStation 5 Video Game Console',
-    image:
-      'https://i5.walmartimages.com/asr/fd596ed4-bf03-4ecb-a3b0-7a9c0067df83.bb8f535c7677cebdd4010741c6476d3a.png?odnWidth=612&odnHeight=612&odnBg=ffffff',
-    site: 'Amazon',
-    date: 1626198688053,
-    price: '499.99',
-  },
-  {
-    title: 'Sony PlayStation 5 Video Game Console',
-    image:
-      'https://i5.walmartimages.com/asr/fd596ed4-bf03-4ecb-a3b0-7a9c0067df83.bb8f535c7677cebdd4010741c6476d3a.png?odnWidth=612&odnHeight=612&odnBg=ffffff',
-    site: 'Amazon',
-    date: 1626198688053,
-    price: '499.99',
-  },
-  {
-    title: 'Sony PlayStation 5 Video Game Console',
-    image:
-      'https://i5.walmartimages.com/asr/fd596ed4-bf03-4ecb-a3b0-7a9c0067df83.bb8f535c7677cebdd4010741c6476d3a.png?odnWidth=612&odnHeight=612&odnBg=ffffff',
-    site: 'Amazon',
-    date: 1626198688053,
-    price: '499.99',
-  },
-  {
-    title: 'Sony PlayStation 5 Video Game Console',
-    image:
-      'https://i5.walmartimages.com/asr/fd596ed4-bf03-4ecb-a3b0-7a9c0067df83.bb8f535c7677cebdd4010741c6476d3a.png?odnWidth=612&odnHeight=612&odnBg=ffffff',
-    site: 'Amazon',
-    date: 1626198688053,
-    price: '499.99',
-  },
-  {
-    title: 'Sony PlayStation 5 Video Game Console',
-    image:
-      'https://i5.walmartimages.com/asr/fd596ed4-bf03-4ecb-a3b0-7a9c0067df83.bb8f535c7677cebdd4010741c6476d3a.png?odnWidth=612&odnHeight=612&odnBg=ffffff',
-    site: 'Amazon',
-    date: 1626198688053,
-    price: '499.99',
-  },
 ];
 const styleCenter = {
   display: 'flex',
@@ -349,7 +309,7 @@ class Dashboard extends React.Component {
               position: 'absolute',
             }}
           >
-            {data.map((item, index) => (
+            {data.length ? data?.map((item, index) => (
               <List.Item key={index} index={index}>
                 <FlexboxGrid>
                   {/* icon */}
@@ -379,7 +339,7 @@ class Dashboard extends React.Component {
                   {/* peak data */}
                 </FlexboxGrid>
               </List.Item>
-            ))}
+            )) : <List.Item> No recent checkouts </List.Item> }
           </List>
         </div>
 

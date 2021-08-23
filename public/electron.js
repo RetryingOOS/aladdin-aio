@@ -13,23 +13,16 @@
 // require( 'regenerator-runtime/runtime')
 const path = require('path');
 const { app, BrowserWindow, shell } = require('electron');
-const { autoUpdater } = require('electron-updater');
-const { log } = require('electron-log');
 const fs = require('fs');
 const initClient = require('./Client/dist/index');
 const isDev = require('electron-is-dev');
+
 let requestClient;
 (async () => {
   requestClient = await initClient();
 })();
 
 console.log(process.versions);
-// import { app, BrowserWindow, shell } from 'electron';
-//  import { autoUpdater } from 'electron-updater';
-//  import log from 'electron-log';
-//  import MenuBuilder from './menu';
-//  import { resolveHtmlPath } from './util';
-//  import fs from 'fs'
 
 const fetch = require('node-fetch');
 const Store = require('electron-store');
@@ -88,18 +81,6 @@ if (isDevelopment) {
   require('electron-debug')();
 }
 
-const installExtensions = async () => {
-  const installer = require('electron-devtools-installer');
-  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = ['REACT_DEVELOPER_TOOLS'];
-
-  return installer
-    .default(
-      extensions.map((name) => installer[name]),
-      forceDownload
-    )
-    .catch(console.log);
-};
 const RESOURCES_PATH = app.isPackaged
   ? path.join(process.resourcesPath, 'assets')
   : path.join(__dirname, '../build/assets');
@@ -108,7 +89,8 @@ const getAssetPath = (...paths) => {
   return path.join(RESOURCES_PATH, ...paths);
 };
 
-const createLoginWindow = async () => {
+const createLoginWindow = () => {
+  console.log('login window')
   loginWindow = new BrowserWindow({
     show: false,
     width: 700,
@@ -127,11 +109,21 @@ const createLoginWindow = async () => {
 
   //  loginWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}#/login`);
   //  loginWindow.loadURL(resolveHtmlPath('index.html'));
+
+  // loginWindow.loadURL(
+  //   // isDev
+  //     // ? 'http://localhost:3000#/login'
+  //     `file://${path.join(__dirname, '../build/index.html')}#/login')}`
+  // );
   loginWindow.loadURL(
-    isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, '../build/index.html')}#/login')}`
-  );
+    url.format({
+      pathname: path.join(__dirname, '../build/index.html'),
+      hash: '/login',
+      protocol: 'file:',
+      slashes: true
+    })
+  )
+
   loginWindow.setMenu(null);
   loginWindow.setFullScreenable(false);
   loginWindow.setFullScreen(true);
@@ -181,9 +173,13 @@ const createLoginWindow = async () => {
     // });
   });
 
-  loginWindow.webContents.on('did-frame-finish-load', () => {
-    loginWindow.webContents.openDevTools();
+  loginWindow.webContents.on('devtools-opened', () => {
+    loginWindow.webContents.closeDevTools();
   });
+
+  // loginWindow.webContents.on('did-frame-finish-load', () => {
+  //   loginWindow.webContents.openDevTools();
+  // });
 
   loginWindow.on('closed', () => {
     mainWindow = null;
@@ -197,31 +193,9 @@ const createLoginWindow = async () => {
   });
 };
 
-const checkLogin = async () => {
-  const hwid = await getHWID();
-  const key = store.get('settings.LicenseKey');
-  fetch('https://aladdin-aio.com/api/license/auth', {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ license: key, machineID: hwid }),
-    method: 'POST',
-  })
-    .then((response1) => response1.json())
-    .then((json) => {
-      console.log(json);
-      if (json.success) {
-        console.log('Login success');
-        return createWindow();
-      }
-      return createLoginWindow();
-    })
-    .catch(createLoginWindow);
-};
-
 const intervalAuth = async () => {
   const key = store.get('settings.LicenseKey');
-  const hwid = await getHWID();
+  const hwid = await machineIdSync();
   fetch('https://aladdin-aio.com/api/license/auth', {
     headers: {
       'Content-Type': 'application/json',
@@ -238,7 +212,7 @@ const intervalAuth = async () => {
     });
 };
 
-const createWindow = async () => {
+const createWindow = () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 1440,
@@ -263,18 +237,20 @@ const createWindow = async () => {
   //   `file://${path.join(__dirname, '../build/index.html')}#/dashboard`
   // );
   mainWindow.loadURL(
-    isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, '../build/index.html')}#/login')}`
-  );
+    url.format({
+      pathname: path.join(__dirname, '../build/index.html'),
+      hash: '/',
+      protocol: 'file:',
+      slashes: true
+    })  );
 
   mainWindow.setMenu(null);
   mainWindow.setFullScreenable(false);
   mainWindow.setFullScreen(true);
   mainWindow.removeMenu(); // #TODO
-  if (isDev) {
-    mainWindow.webContents.openDevTools();
-  }
+  // if (isDev) {
+  //   mainWindow.webContents.openDevTools();
+  // }
 
   mainWindow.webContents.on('devtools-opened', () => {
     mainWindow.webContents.closeDevTools();
@@ -380,12 +356,38 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.whenReady().then(createWindow).catch(console.log);
+
+const checkLogin = () => {
+  if (process.env.HTTPS_PROXY || process.env.NODE_TLS_REJECT_UNAUTHORIZED) {
+    return app.quit()
+  }
+  const hwid = machineIdSync();
+  const key = store.get('settings.LicenseKey');
+  fetch('https://aladdin-aio.com/api/license/auth', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ license: key, machineID: hwid }),
+    method: 'POST',
+  })
+    .then((response1) => response1.json())
+    .then((json) => {
+      if (json.success) {
+        console.log('Login success');
+        return createWindow();
+      }
+      return createLoginWindow();
+    })
+    .catch(createLoginWindow);
+};
+
+
+app.whenReady().then(checkLogin).catch(console.log);
 
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) createWindow();
+  if (mainWindow === null) checkLogin();
 });
 
 ipcMain.on('activated', async (event, arg) => {
@@ -746,8 +748,7 @@ ipcMain.on('getLogs', (event, taskID) => {
 const TargetLogin = require('./modules/target-login');
 const AmazonLogin = require('./modules/amazon/amazon-login');
 const ProxyPing = require('./modules/proxyPing');
-import { getHWID } from 'hwid'
-//  import TargetLogin from './modules/target-login';
+const { machineIdSync } = require("node-machine-id")
 //  import AmazonLogin from './modules/amazon/amazon-login';
 //  import ProxyPing from './modules/proxyPing';
 //  import initClient from './Client/dist/index';
@@ -817,25 +818,22 @@ if (!fs.existsSync(path.join(app.getPath('userData'), 'config.json'))) {
     declines: 0,
     totalSpent: 0,
   });
-  store.set('accounts', [
-    {
-      id: 0,
-      store: '',
-      region: '',
-      cookies: [],
-      name: 'Account 0',
-      proxy: '',
-      status: '',
-    },
-  ]);
+  store.set('accounts', {
+    amazon: [],
+    target: [],
+    bestbuy: []
+  });
   store.set('settings', {
-    LicenseKey: 'RANDOM-UJII2-231JS-163DA',
+    LicenseKey: '',
     RetryDelays: 3333,
     MonitorDelays: 3333,
     WebhookURL: '',
   });
   store.set('proxies', {});
-  store.set('sessions', {});
+  store.set('sessions', {
+    amazon: {},
+    target: {},
+  });
   store.set('tasks', []);
   store.set('taskgroups', [
     {
@@ -1167,7 +1165,7 @@ ipcMain.on('test:proxy', async (event, groupID, id, proxy) => {
 
 ipcMain.on('checkAuth', async (event, info) => {
   const key = store.get('settings.LicenseKey');
-  const hwid = await getHWID()
+  const hwid = await machineIdSync()
   const response = await requestClient(
     'https://aladdin-aio.com/api/license/auth',
     {
@@ -1181,17 +1179,23 @@ ipcMain.on('checkAuth', async (event, info) => {
   const responseJSON = JSON.parse(response.body);
   console.log(responseJSON);
 
-  if (response.status === 200 && responseJSON.success) {
-    event.returnValue = true;
+  if (responseJSON.success) {
+    event.returnValue = {
+      success: true,
+      key: key
+    };
   } else {
-    event.returnValue = false;
+    event.returnValue = {
+      success: false,
+      key: key
+    }
   }
 });
 
 
 
 ipcMain.on('activate', async (event, key) => {
-  const hwid = await getHWID()
+  const hwid = await machineIdSync()
   const response = await requestClient(
     'https://aladdin-aio.com/api/license/auth',
     {
@@ -1203,9 +1207,14 @@ ipcMain.on('activate', async (event, key) => {
     'POST'
   );
 
-  const responseJSON = JSON.parse(response.body);
+  let responseJSON;
+  try {
+    responseJSON = JSON.parse(response.body);
+  } catch (e) {
+    responseJSON = false
+  }
   console.log(responseJSON);
-  if (response.status === 200 && responseJSON.success) {
+  if (response.status === 200 && responseJSON?.success) {
     event.returnValue = { key, success: true };
     store.set('settings.LicenseKey', key);
     store.set('settings.avatar', responseJSON.user.image);

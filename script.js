@@ -51,7 +51,7 @@ function obfuscateDir(dirPath) {
         rotateStringArray: true,
         selfDefending: false,
         stringArray: true,
-        stringArrayEncoding: ['rc4'],
+        stringArrayEncoding: ['rc4', 'base64'],
         target: 'node',
         stringArrayThreshold: 0.75,
         transformObjectKeys: false,
@@ -68,7 +68,7 @@ function obfuscateDir(dirPath) {
   }
 }
 
-// obfuscateDir(path.join(__dirname, './build'));
+obfuscateDir(path.join(__dirname, './build'));
 
 compileFile(path.join(__dirname, './build/preload.js'));
 // fs.copyFileSync('./public/electron.js', './build/electron.js');
@@ -119,9 +119,8 @@ try {
 fs.writeFileSync(
   path.join(__dirname, './build/electron.js'),
   `
-  const bytenode = require('bytenode');
+  require('bytenode');
   const v8 = require('v8');
-  const fs = require('fs');
   
   v8.setFlagsFromString('--no-lazy');
   

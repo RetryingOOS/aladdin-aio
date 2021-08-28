@@ -65,7 +65,7 @@ class AmazonRegular extends Tasks {
     await this.getRandomProxy();
     await this.getInfo();
     // await this.monitor();
-    await this.getItem();
+    // await this.getItem();
     // await this.getTokens();
     await this.addToCart();
     await this.fastCheckout();
@@ -210,6 +210,7 @@ class AmazonRegular extends Tasks {
         this.sendStatus('Retrying', false);
         await this.sleep(1000);
         await this.addToCart();
+        this.atcAttempts++;
       } else {
         this.sendStatus('Sleeping... Waiting for monitor');
         this.cancelled = true;

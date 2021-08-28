@@ -51,9 +51,10 @@ class AmazonMonitor extends Tasks {
     var interval = setInterval(async () => {
         this.sendStatus(`Sleeping for ${60 - this.count} seconds`);
         this.count += 1;
-        if (this.canncelled) {
+        if (this.cancelled) {
           clearInterval(interval);
           this.count = 0;
+          this.sendStatus('Stopped');
           resolve();
           return
         }
@@ -90,7 +91,7 @@ class AmazonMonitor extends Tasks {
           'sec-fetch-site': 'none',
           'sec-fetch-user': '?1',
           'upgrade-insecure-requests': '1',
-          // cookie: this.cookieString
+          cookie: this.cookieString
         },
         proxy: this.proxy ? this.proxy : '',
       },

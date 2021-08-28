@@ -26,8 +26,29 @@ class AmazonMobile extends Tasks {
     this.cancelled = true;
   }
 
+  async getInfo() {
+    this.itemID = this.taskInfo.sku;
+
+    const original = this.store.get(`sessions.amazon.${this.taskInfo.session}`);
+    let firstCookie = true;
+    const cookies = original.cookies;
+    for (let i = 0; i < cookies.length; i++) {
+      if (firstCookie) {
+        const cookieValue = cookies[i].value;
+        this.cookieString += `${cookies[i].name}=${cookieValue}`;
+        firstCookie = false;
+      } else {
+        const cookieValue = cookies[i].value;
+        this.cookieString += ` ;${cookies[i].name}=${cookieValue}`;
+      }
+      if (cookies[i].name === 'session-id') {
+        this.sessionID = cookies[i].value;
+      }
+    }
+  }
+
   async initialize() {
-    this.sendStatus('Starting Task');
+    this.sendStatus('Waiting for Monitor');
     await this.monitor();
     // await this.getTokens();
     await this.addToCart();

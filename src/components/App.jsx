@@ -913,7 +913,7 @@ class TasksTable extends React.Component {
               width: '75%',
             }}
           >
-            <ContextMenuTrigger preventClose={false} id="SIMPLE">
+            {/* <ContextMenuTrigger preventClose={false} id="SIMPLE"> */}
               <Table
                 height={this.height()}
                 data={
@@ -1058,8 +1058,8 @@ class TasksTable extends React.Component {
                   </Cell>
                 </Column>
               </Table>
-            </ContextMenuTrigger>
-            <ContextMenu hideOnLeave id="SIMPLE">
+            {/* </ContextMenuTrigger> */}
+            {/* <ContextMenu hideOnLeave id="SIMPLE">
               <MenuItem onClick={this.handleClick} data={{ item: 'item 1' }}>
                 <Icon icon="play" style={{ color: 'springgreen' }} /> &nbsp;
                 Start
@@ -1079,7 +1079,7 @@ class TasksTable extends React.Component {
                 <Icon icon="trash2" style={{ color: 'crimson' }} /> &nbsp;
                 Delete
               </MenuItem>
-            </ContextMenu>
+            </ContextMenu> */}
           </div>
           <div
             className="TaskGroup"

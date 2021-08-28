@@ -71,7 +71,7 @@ const store = createStore(function (
       amazon: [
         { value: 'amazonTurbo', label: 'Turbo' },
         { value: 'amazonNormal', label: 'Normal' },
-        { value: 'amazonMobile', label: 'Mobile' },
+        // { value: 'amazonMobile', label: 'Mobile' },
         { value: 'amazonMonitor', label: 'Monitor' },
       ],
       target: [{ value: 'targetSafe', label: 'Safe' }],

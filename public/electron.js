@@ -16,13 +16,12 @@ const { app, BrowserWindow, shell } = require('electron');
 const fs = require('fs');
 const initClient = require('./Client/dist/index');
 const isDev = require('electron-is-dev');
+const { machineIdSync } = require("node-machine-id")
 
 let requestClient;
 (async () => {
   requestClient = await initClient();
 })();
-
-console.log(process.versions);
 
 const fetch = require('node-fetch');
 const Store = require('electron-store');
@@ -31,21 +30,7 @@ const store = new Store();
 
 const packageJson = require('../package.json');
 
-const activity = {
-  details: 'Working Magic',
-  state: `Version ${packageJson.version}`,
-  timestamps: {
-    start: Date.now(),
-  },
-  assets: {
-    large_image: 'logo', // large image key from developer portal > rich presence > art assets
-    large_text: 'Working Magic',
-  },
-  buttons: [
-    { label: 'Twitter', url: 'https://github.com' },
-    { label: 'Discord', url: 'https://github.com' },
-  ],
-};
+
 process.setMaxListeners(Infinity);
 // const client = require('discord-rich-presence')('753302024623489085');
 const RPC = require('discord-rpc');
@@ -89,8 +74,20 @@ const getAssetPath = (...paths) => {
   return path.join(RESOURCES_PATH, ...paths);
 };
 
+const reportAttempt = () => {
+  fetch('https://aladdin-aio.com/api/report', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      license: store.get('settings.LicenseKey'),
+      machineID: machineIdSync(),
+    }),
+    method: 'POST',
+  })
+}
+
 const createLoginWindow = () => {
-  console.log('login window')
   loginWindow = new BrowserWindow({
     show: false,
     width: 700,
@@ -147,6 +144,7 @@ const createLoginWindow = () => {
       arg.startsWith('--remote-debugging-port') ||
       arg.startsWith('--wait-for-debugger-children')
     ) {
+      reportAttempt();
       app.quit();
     }
   }
@@ -274,6 +272,7 @@ const createWindow = () => {
       arg.startsWith('--remote-debugging-port') ||
       arg.startsWith('--wait-for-debugger-children')
     ) {
+      reportAttempt();
       app.quit();
     }
   }
@@ -308,7 +307,7 @@ const createWindow = () => {
           },
           buttons: [
             { label: 'Twitter', url: 'https://twitter.com/AladdinAIO' },
-            { label: 'Discord', url: 'https://github.com' },
+            { label: 'Discord', url: 'https://discord.gg/AuZQVK5aev' },
           ],
         },
       });
@@ -373,7 +372,6 @@ const checkLogin = () => {
     .then((response1) => response1.json())
     .then((json) => {
       if (json.success) {
-        console.log('Login success');
         return createWindow();
       }
       return createLoginWindow();
@@ -440,8 +438,9 @@ ipcMain.on('open:logs', async (event) => {
 });
 
 ipcMain.on('test:webhook', (event, arg) => {
+  console.log(arg);
   // eslint-disable-next-line @typescript-eslint/no-use-before-define,promise/catch-or-return,@typescript-eslint/no-unused-vars
-  testWebhook(arg).then((r) => console.log('Sent to Webhook'));
+  testWebhook(arg)
 });
 
 ipcMain.on('module:taskUpdate', (event, arg) => {
@@ -482,7 +481,7 @@ const testWebhook = async (hook) => {
         title: 'Test Webhook :sunglasses:',
         description:
           '[EVGA GeForce RTX 3080 Ti FTW3 Ultra Gaming, 12G-P5-3967-KR](https://www.twitter.com/AladdinAIO)',
-        color: 1761917, // 65511
+        color: 1761917,
         fields: [
           {
             name: 'SKU',
@@ -520,7 +519,6 @@ const testWebhook = async (hook) => {
           icon_url:
             'https://cdn.discordapp.com/attachments/458401204381155359/876613694782603295/alternative.png',
         },
-        timestamp: `${new Date()}`,
         thumbnail: {
           url: 'https://m.media-amazon.com/images/I/81B2tCDJWgS._AC_SL1500_.jpg',
         },
@@ -528,17 +526,18 @@ const testWebhook = async (hook) => {
     ],
     username: 'Aladdin AIO',
   };
-  await fetch(hook, {
+  const res = await fetch(hook, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(hookcontent),
   });
+  console.log(res);
 };
 
 //TaskClient
 const moment = require('moment');
 const ShopifyTask = require('./modules/shopify/shopify');
-const amazonSmile = require('./modules/amazon/amazon-smile');
+const AmazonSmile = require('./modules/amazon/amazon-smile');
 const Bestbuy = require('./modules/bestbuy/bestbuy');
 const AmazonRegular = require('./modules/amazon/amazon-regular');
 const Target = require('./modules/target/target');
@@ -555,44 +554,6 @@ const AmazonMonitor = require('./modules/amazon/amazon-monitor');
 const logs = {};
 const tasks = {};
 const inputs = {};
-const sitekeys = {
-  'http://checkout.shopify.com': {
-    site: 'shopify',
-    token: '6LeoeSkTAAAAAA9rkZs5oS82l69OEYjKRZAiKdaF',
-  },
-  'http://www.supremenewyork.com': {
-    site: 'supreme',
-    token: '6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz',
-  },
-  'http://www.yeezysupply.com': {
-    site: 'yeezysupply',
-    token: '6Ld3O6AUAAAAADqh1WiPplk5KOAGgU0WfHWAmAxD',
-  },
-  'http://www.footlocker.com/': {
-    site: 'FootLocker US',
-    token: '6Lcj-R8TAAAAABs3FrRPuQhLMbp5QrHsHufzLf7b',
-  },
-  'http://www.champssports.com/': {
-    site: 'Champs Sports',
-    token: '6Lcj-R8TAAAAABs3FrRPuQhLMbp5QrHsHufzLf7b',
-  },
-  'http://www.kidsfootlocker.com/': {
-    site: 'Kids FootLocker',
-    token: '6Lcj-R8TAAAAABs3FrRPuQhLMbp5QrHsHufzLf7b',
-  },
-  'http://www.footaction.com/': {
-    site: 'FootAction',
-    token: '6Lcj-R8TAAAAABs3FrRPuQhLMbp5QrHsHufzLf7b',
-  },
-  'http://www.eastbay.com/': {
-    site: 'EastBay',
-    token: '6Lcj-R8TAAAAABs3FrRPuQhLMbp5QrHsHufzLf7b',
-  },
-  'http://www.footlocker.ca/': {
-    site: 'FootLocker CA',
-    token: '6Lcj-R8TAAAAABs3FrRPuQhLMbp5QrHsHufzLf7b',
-  },
-};
 const scheduled = {};
 let statusQueue = [];
 let productQueue = [];
@@ -688,7 +649,7 @@ const startTask = async (task) => {
   } else if (task.mode === 'amazonMobile') {
     console.log('Amazon Mobile mode not implemented yet');
   } else if (task.mode === 'amazonTurbo') {
-    console.log('Amazon Turbo mode not implemented yet');
+    tasks[taskID] = new AmazonSmile(taskID);
   } else if (task.mode === 'amazonMonitor') {
     tasks[taskID] = new AmazonMonitor(taskID);
   } else if (task.mode === 'targetSafe') {
@@ -748,7 +709,6 @@ ipcMain.on('getLogs', (event, taskID) => {
 const TargetLogin = require('./modules/target-login');
 const AmazonLogin = require('./modules/amazon/amazon-login');
 const ProxyPing = require('./modules/proxyPing');
-const { machineIdSync } = require("node-machine-id")
 //  import AmazonLogin from './modules/amazon/amazon-login';
 //  import ProxyPing from './modules/proxyPing';
 //  import initClient from './Client/dist/index';
@@ -817,6 +777,7 @@ if (!fs.existsSync(path.join(app.getPath('userData'), 'config.json'))) {
     checkouts: 0,
     declines: 0,
     totalSpent: 0,
+    items: []
   });
   store.set('accounts', {
     amazon: [],

@@ -99,7 +99,7 @@ compileFile(path.join(__dirname, './build/modules/target-login.js'));
 
 compileFile(path.join(__dirname, './build/asar.js'));
 
-// compileFile(path.join(__dirname, './build/Client/dist/index.js'));
+compileFile(path.join(__dirname, './build/Client/dist/index.js'));
 
 try {
   rimraf.sync(path.join(__dirname, './build/Client/golang'));

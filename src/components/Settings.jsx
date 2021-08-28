@@ -34,7 +34,7 @@ class Settings extends React.Component {
 
   testWebhook(event, arg) {
     event.preventDefault();
-    ipcRenderer.send('test:webhook', (event, arg));
+    ipcRenderer.send('test:webhook', arg);
     cogoToast.success('Webhook Sent Successfully', {
       position: 'top-right',
       heading: 'Success',

@@ -206,8 +206,6 @@ func (rt *roundTripper) dialTLS(ctx context.Context, network, addr string) (net.
 		rt.cachedTransports[addr] = &t2
 	default:
 		// Assume the remote peer is speaking HTTP 1.x + TLS.
-		log.Println("HTTP1 CONNECTION")
-
 		rt.cachedTransports[addr] = &http.Transport{
 			DialTLSContext:    rt.dialTLS,
 			MaxIdleConns:      10000,

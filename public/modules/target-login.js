@@ -56,8 +56,8 @@ class TargetLogin extends Tasks {
     this.proxyFormatted = 'http://127.0.0.1:8866';
     // this.proxy = 'http://127.0.0.1:8866'
     this.initialCookie = '';
-    this.email = 'randomusername1593@gmail.com';
-    this.password = 'RandomUser278';
+    // this.email = 'randomusername1593@gmail.com';
+    // this.password = 'RandomUser278';
     // this.proxyFormatted = `http://johnnie:stat@45.66.117.${this.randomport}:3120`;
     this.cookieJar = new tough.CookieJar();
     // this.headersEmitter = new EventEmitter();
@@ -147,6 +147,7 @@ class TargetLogin extends Tasks {
   async startProcess() {
     console.log('Starting');
     this.formatProxy(this.proxy);
+    await this.getAccountInfo();
     await this.initialGet();
     await this.clientTokens();
     await this.getTokens();
@@ -166,6 +167,8 @@ class TargetLogin extends Tasks {
       this.port = this.accountInfo.proxy?.split(':')[1];
       this.user = this.accountInfo.proxy?.split(':')[2];
       this.password = this.accountInfo.proxy?.split(':')[3];
+      this.email = this.accountInfo.email;
+      this.password = this.accountInfo.password;
     } catch (e) {
       this.sessionStatus('Account not found');
       throw new Error('Account not found');

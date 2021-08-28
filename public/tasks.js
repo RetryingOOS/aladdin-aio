@@ -59,6 +59,7 @@ class Tasks {
   }
 
   async getRandomProxy() {
+    try {
     const proxies = this.store.get(`proxies.${this.taskInfo.proxy}.proxies`);
     const keys = Object.keys(proxies);
     const proxyObject = proxies[keys[(keys.length * Math.random()) << 0]];
@@ -66,6 +67,9 @@ class Tasks {
       this.proxy = `${proxyObject.ip}:${proxyObject.port}`;
     }
     this.proxy = `${proxyObject.ip}:${proxyObject.port}:${proxyObject.user}:${proxyObject.password}`;
+  } catch (e) {
+    this.proxy = '';
+  }
   }
 
   sendProduct(product) {
@@ -152,6 +156,9 @@ class Tasks {
   }
 
   async sendSuccess(json) {
+    // add success to store items
+
+    
     fetch('https://aladdin-aio.com/api/success', {
       method: 'POST',
       headers: { 

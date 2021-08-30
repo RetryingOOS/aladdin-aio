@@ -62,9 +62,12 @@
     "react-test": "craco test --env=jsdom",
     "react-eject": "craco eject",
     "electron-build": "electron-builder",
-    "bytenode": "node_modules\\electron\\dist\\electron.exe ./script.js",
+    "build:tls": "yarn --cwd ./build/Client run build && yarn --cwd ./build/Client run build:mac", 
+    "bytenode:windows": "node_modules\\electron\\dist\\electron.exe ./script.js",
+    "bytenode:mac": "./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ./script.js",
     "release": "yarn react-build && electron-builder --publish=always",
-    "build": "yarn react-build && yarn bytenode && yarn electron-build",
+    "build": "yarn react-build && yarn build:tls && yarn bytenode:mac",
+    "build:windows": "yarn react-build && yarn bytenode:windows && yarn electron-build",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\""
   },
   "browserslist": {

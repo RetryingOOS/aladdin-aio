@@ -1,4 +1,4 @@
-module github.com/retryingoos/client
+module github.com/Danny-Dasilva/CycleTLS/cycletls
 
 go 1.16
 

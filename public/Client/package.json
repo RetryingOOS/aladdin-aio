@@ -8,7 +8,7 @@
     "build": "tsc",
     "build:windows": "set go111module=off cross-env GOOS=windows go build -o ./dist/index.exe ./golang",
     "build:linux": "cross-env GOOS=linux go build -o ./dist/index ./golang && chmod +x ./dist/index",
-    "build:mac1": "go build -v ./...",
+    "build:macos": "cross-env GOOS=darwin go build -v ./...",
     "build:mac": "cross-env GOOS=darwin go env -w GO111MODULE=auto && go get -d ./... && go build -o ./dist/index-mac ./golang && chmod +x ./dist/index-mac",
     "prepare": "npm run build && npm run build:windows && npm run build:linux && npm run build:mac",
     "build:m1": "GO111MODULE=off cross-env GOOS=arm64 go build -o ./dist/index-mac ./golang && chmod +x ./dist/index-mac"

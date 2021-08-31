@@ -6,9 +6,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"log"
-
-	// "log"
 	"net"
 	"strconv"
 	"strings"

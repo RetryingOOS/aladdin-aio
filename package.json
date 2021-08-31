@@ -62,7 +62,7 @@
     "react-test": "craco test --env=jsdom",
     "react-eject": "craco eject",
     "electron-build": "electron-builder",
-    "build:tls": "yarn --cwd ./build/Client run build && yarn --cwd ./build/Client run build:macos", 
+    "build:tls": "yarn --cwd ./build/Client run build && yarn --cwd ./build/Client/golang run build:macos", 
     "bytenode:windows": "node_modules\\electron\\dist\\electron.exe ./script.js",
     "bytenode:mac": "./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ./script.js",
     "release": "yarn react-build && electron-builder --publish=always",

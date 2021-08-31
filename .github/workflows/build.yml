@@ -11,6 +11,7 @@ jobs:
         os: [macos-latest]
 
     steps:
+      - uses: actions/setup-go@v2
       - name: Check out Git repository
         uses: actions/checkout@v1
 
@@ -21,7 +22,6 @@ jobs:
 
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
-        uses: actions/setup-go@v2
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)

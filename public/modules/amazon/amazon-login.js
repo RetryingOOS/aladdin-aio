@@ -121,9 +121,7 @@ class AmazonLogin extends Tasks {
         console.log(error);
       }
 
-      await page.waitForSelector('#paymentsHubHeaderSection', {
-        timeout: 180000,
-      });
+      await this.sleep(this.getRandomInt(1000, 2000));
 
       await page.goto(
         'https://www.amazon.com/cpe/yourpayments/settings/manageoneclick?ref_=ya_d_l_change_1_click',

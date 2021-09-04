@@ -926,7 +926,6 @@ ipcMain.on('save:harvesters', async (event, id, arg) => {
 // Settings
 ipcMain.on('save:settings', async (event, arg) => {
   store.set('settings', arg);
-  mainWindow.webContents.send('log', 'test message');
 });
 
 ipcMain.on('get:settings', async (event, arg) => {
@@ -935,7 +934,9 @@ ipcMain.on('get:settings', async (event, arg) => {
 
 // Analytics 'get:analytics'
 ipcMain.on('get:analytics', async (event, arg) => {
-  event.returnValue = store.get('analytics');
+  const data = store.get('analytics');
+  console.log(data);
+  event.returnValue = data
 });
 
 // Accounts

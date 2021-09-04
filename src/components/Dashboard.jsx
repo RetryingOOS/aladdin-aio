@@ -26,8 +26,8 @@ const DoughnutData = {
   ],
 };
 
-const data = [
-];
+// const data = [
+// ];
 const styleCenter = {
   display: 'flex',
   justifyContent: 'center',
@@ -91,6 +91,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    const data = this.props.state.analytics.items;
     return (
       <div
         className="SettingsPage"
@@ -309,7 +310,7 @@ class Dashboard extends React.Component {
               position: 'absolute',
             }}
           >
-            {data.length ? data?.map((item, index) => (
+            {data?.length ? data?.map((item, index) => (
               <List.Item key={index} index={index}>
                 <FlexboxGrid>
                   {/* icon */}

@@ -124,7 +124,7 @@ class AmazonSmile extends Tasks {
       // await this.addToCart();
       if (this.atcAttempts < 5) {
         await this.sendStatus('Retrying ATC');
-        await this.sleep(1000);
+        await this.sleep(2000);
         await this.addToCart();
         this.atcAttempts++;
       } else {
@@ -135,7 +135,7 @@ class AmazonSmile extends Tasks {
   }
 
   async placeOrder() {
-    await this.sleep(this.getRandomInt(3000, 5000));
+    await this.sleep(this.getRandomInt(1000, 1500));
     if (this.cancelled) return;
     this.sendStatus('Placing Order');
     const req = await this.requestClient(
@@ -193,7 +193,7 @@ class AmazonSmile extends Tasks {
     if (this.cancelled) return;
     if (req.status === 200) {
       console.log(req.body);
-      await this.sendStatus('Placed Order');
+      await this.sendStatus('Checkout Successful');
     } else {
       console.log(req.status);
       console.log(req.body);

@@ -89,7 +89,7 @@ const store = createStore(function (
       { value: 'customShopify', label: 'Custom Shopify' },
     ],
     proxies: {},
-    analytics: [],
+    analytics: {},
     inputtedProxies: [],
     selectedProxies: [],
     listPings: {},

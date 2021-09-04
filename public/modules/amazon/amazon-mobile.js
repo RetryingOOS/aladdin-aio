@@ -138,11 +138,9 @@ class AmazonMobile extends Tasks {
     this.sendStatus('Getting tokens');
     this.sendStatus(req.status);
     // console.log(req.body);
-    const startTime = new Date();
     const $ = cheerio.load(req.body);
     console.log($('#ubbShipTo').val());
     this.addressID = $('#ubbShipTo').val();
-    const endTime = new Date();
   }
 
   async getCookies() {

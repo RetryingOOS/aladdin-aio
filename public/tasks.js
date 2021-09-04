@@ -157,7 +157,23 @@ class Tasks {
 
   async sendSuccess(json) {
     // add success to store items
+    let items
+    try {
+      items = this.store.get('analytics.items')
+    } catch (e){
+      this.store.set('analytics.items', [])
+      items = this.store.get('analytics.items')
+    }
 
+    items.push({
+      title: json?.product,
+      image: json?.imageURL ?? 'https://semantic-ui.com/images/wireframe/image.png',
+      date: Date.now(),
+      site: json?.store,
+      price: json?.price,
+    })
+
+    this.store.set('analytics.items', items)
     
     fetch('https://aladdin-aio.com/api/success', {
       method: 'POST',

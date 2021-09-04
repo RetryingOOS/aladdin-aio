@@ -155,7 +155,7 @@ class AmazonRegular extends Tasks {
 
   async addToCart() {
     if (this.cancelled) return;
-    await this.sleep(this.getRandomInt(0, 500));
+    await this.sleep(this.getRandomInt(200, 500));
     this.sendStatus('Adding to cart');
     const req = await this.requestClient(
       'https://www.amazon.com/gp/product/handle-buy-box/ref=dp_start-bbf_1_glance',
@@ -208,7 +208,7 @@ class AmazonRegular extends Tasks {
       if (this.atcAttempts < 5) {
         this.sendStatus('Error getting not 200', false);
         this.sendStatus('Retrying', false);
-        await this.sleep(1000);
+        await this.sleep(2000);
         await this.addToCart();
         this.atcAttempts++;
       } else {
@@ -219,7 +219,7 @@ class AmazonRegular extends Tasks {
   }
 
   async placeOrder() {
-    await this.sleep(this.getRandomInt(0, 500));
+    await this.sleep(this.getRandomInt(200, 500));
     if (this.cancelled) return;
     this.sendStatus('Placing Order');
     const req = await this.requestClient(
@@ -343,7 +343,7 @@ class AmazonRegular extends Tasks {
   }
 
   async submitOrder() {
-    await this.sleep(this.getRandomInt(0, 500));
+    await this.sleep(this.getRandomInt(200, 500));
     if (this.cancelled) return;
     this.sendStatus('Submitting Order');
     const req = await this.requestClient(
@@ -384,7 +384,7 @@ class AmazonRegular extends Tasks {
   }
 
   async fastCheckout() {
-    await this.sleep(this.getRandomInt(0, 500));
+    await this.sleep(this.getRandomInt(200, 500));
     if (this.cancelled) return;
     this.sendStatus('Submitting Order');
     const fastCheckoutReq = await this.requestClient(
@@ -501,7 +501,7 @@ class AmazonRegular extends Tasks {
   }
 
   async staticDecoupledReq() {
-    await this.sleep(this.getRandomInt(0, 500));
+    await this.sleep(this.getRandomInt(200, 500));
     this.sendStatus('Checking out');
     if (this.cancelled) return;
     const req = await this.requestClient(
